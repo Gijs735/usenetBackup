@@ -10,6 +10,7 @@ class main {
     // create a frame
     static JFrame frame;
     static JProgressBar progressbar1;
+    static Options options;
 
     public static void main(String args[]) {
         if (System.getProperty("os.name").startsWith("Mac")) {
@@ -18,7 +19,7 @@ class main {
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 400);
 
-            Options options = new Options();
+            options = new Options();
 
             //header
             JPanel header = new JPanel();
@@ -55,16 +56,11 @@ class main {
             optionsbutton.addActionListener(e -> OptionsDialog.createOptionsDialog(options));
             //start.addActionListener(e -> ThreadManager.startThreadManager(start,optionsbutton)); //execute the main method from CommandManager when pressing send button
             start.addActionListener(e -> {
-                FileManager manager = new FileManager();
-                manager.listFiles(new File("/Users/gijs/Desktop/Logo 4"), options.getGBPARTSIZE());
-                try {
-                    BackblazeManager.uploadFile("AllFiles.txt","AllFiles.txt",options.getB2TOKENID(),options.getB2TOKEN(),options.getB2BUCKETID());
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-                    noSuchAlgorithmException.printStackTrace();
-                }
-            });
+//                    FileManager manager = new FileManager();
+//                    manager.outputText(new File("/mnt/cifs_union/films"), options.getGBPARTSIZE());
+//                    BackblazeManager.downloadFile("AllFiles.txt","AllFiles.txt",options.getB2TOKENID(),options.getB2TOKEN());
+                ThreadManager.cloudDedupe(new String[]{"/Users/gijs/Desktop/Logo 4"});
+                });
             exit.addActionListener(e -> confirmexit());
 
             progress();

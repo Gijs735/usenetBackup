@@ -13,7 +13,13 @@ public class FileManager {
 
     private List<List<String>> allFilesSplitList = new ArrayList<List<String>>();
 
-    public void listFiles(File folder, int GBsplitSize) {
+    public void outputFilesInFolder(File folder, int GBsplitSize, String outputname) {
+        listFiles(folder);
+        groupFiles(GBsplitSize);
+        textFile(outputname);
+    }
+
+    private void listFiles(File folder) {
         File[] fileList = folder.listFiles();
         String[] fileNames = new String[fileList.length];
 
@@ -26,17 +32,13 @@ public class FileManager {
         // Iterate through and call this function for any sub-directories.
         for (File f2 : fileList) {
             if (f2.isDirectory()) {
-                listFiles(f2, GBsplitSize);
+                listFiles(f2);
             }
         }
-        groupFiles(GBsplitSize);
-        textFile();
     }
 
     private String[] getAllFilesArray(){
-        String[] itemsArray = new String[allFiles.size()];
-        itemsArray = allFiles.toArray(itemsArray);
-        return itemsArray;
+        return allFiles.toArray(new String[allFiles.size()]);
     }
 
     private void groupFiles(int GBsplitSize){
@@ -59,27 +61,27 @@ public class FileManager {
                 long bytes = Files.size(path);
                 totalBytes = totalBytes + bytes;
                 if (!Files.isDirectory(path)){ allFilesSplitList.get(index).add(path.toString()); }
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void textFile() {
+    private void textFile(String outputname) {
         try {
-        File myObj = new File("allFiles.txt");
-            if (myObj.createNewFile()) {
-                for (int i = 0; i < allFilesSplitList.size(); i++) {
-                    for (int j = 0; j < allFilesSplitList.get(i).size(); j++) {
-                            File path = new File(allFilesSplitList.get(i).get(j));
-                            FileWriter myWriter = new FileWriter("allFiles.txt", true);
-                            myWriter.write(allFilesSplitList.get(i).get(j) + "\n");
-                            myWriter.close();
+            File myObj = new File(outputname);
+                if (myObj.createNewFile()) {
+                    for (int i = 0; i < allFilesSplitList.size(); i++) {
+                        for (int j = 0; j < allFilesSplitList.get(i).size(); j++) {
+                                File path = new File(allFilesSplitList.get(i).get(j));
+                                FileWriter myWriter = new FileWriter(outputname, true);
+                                myWriter.write(i + "," + allFilesSplitList.get(i).get(j) + "\n");
+                                myWriter.close();
                     }
                 }
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }

@@ -1,4 +1,5 @@
 import java.io.*;
+import java.net.ProtocolException;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -11,11 +12,12 @@ public class BackblazeManager {
     static private String apiUrl = null;
     static private String authorizationToken = null;
     static private String downloadUrl = null;
+    static private String bucketname = null;
 
     private static String[] authorizeb2(String applicationKeyId, String applicationKey) {
         HttpURLConnection connection = null;
         String headerForAuthorizeAccount = "Basic " + Base64.getEncoder().encodeToString((applicationKeyId + ":" + applicationKey).getBytes());
-        String[] response = new String[2];
+        String[] response = new String[3];
         try {
             URL url = new URL("https://api.backblazeb2.com/b2api/v2/b2_authorize_account");
             connection = (HttpURLConnection)url.openConnection();
@@ -24,7 +26,7 @@ public class BackblazeManager {
             InputStream in = new BufferedInputStream(connection.getInputStream());
             String jsonResponse = myInputStreamReader(in);
             JSONObject json = new JSONObject(jsonResponse);
-            response = new String[]{json.getString("apiUrl"),json.getString("authorizationToken"),json.getString("downloadUrl")};
+            response = new String[]{json.getString("apiUrl"),json.getString("authorizationToken"),json.getString("downloadUrl"),json.getJSONObject("allowed").getString("bucketName")};
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -88,9 +90,47 @@ public class BackblazeManager {
             apiUrl = authResult[0];
             authorizationToken = authResult[1];
             downloadUrl = authResult[2];
+            bucketname = authResult[3];
         }
         String[] uploadData = b2GetUploadUrl(apiUrl,authorizationToken,bucketId);
         b2UploadFile(FileUtils.readFileToByteArray(new File(filepath)),uploadData[0],uploadData[1], uploadedFileName, "b2/x-auto", SHA1.sha1Code(filepath));
+    }
+
+    public static void downloadFile(String fileName, String downloadedFileName, String applicationKeyId, String applicationKey) throws IOException {
+        if(authorizationToken == null){
+            String[] authResult = authorizeb2(applicationKeyId, applicationKey);
+            apiUrl = authResult[0];
+            authorizationToken = authResult[1];
+            downloadUrl = authResult[2];
+            bucketname = authResult[3];
+        }
+        byte[] file = b2downloadFile(fileName, authorizationToken, downloadUrl, bucketname);
+        File filepath = new File(downloadedFileName);
+        try {
+            OutputStream os = new FileOutputStream(filepath);
+            os.write(file);
+            os.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static byte[] b2downloadFile(String fileName, String accountAuthorizationToken, String downloadUrl, String bucketName) throws IOException {
+        HttpURLConnection connection = null;
+        byte downloadedData[] = null;
+        try {
+            URL url = new URL(downloadUrl + "/file/" + bucketName + "/" + fileName);
+            connection = (HttpURLConnection)url.openConnection();
+            connection.setRequestProperty("Authorization", accountAuthorizationToken);
+            connection.setRequestMethod("GET");
+            connection.setDoOutput(true);
+            downloadedData = myDataInputStreamHandler(connection.getInputStream());
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        } finally {
+            connection.disconnect();
+        }
+        return downloadedData;
     }
 
     private static String myInputStreamReader(InputStream in) throws IOException {
@@ -103,5 +143,9 @@ public class BackblazeManager {
         }
         reader.close();
         return sb.toString();
+    }
+
+    private static byte[] myDataInputStreamHandler(InputStream in) throws IOException {
+        return in.readAllBytes();
     }
 }
