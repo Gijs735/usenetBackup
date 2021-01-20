@@ -5,6 +5,9 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class main {
     // create a frame
@@ -59,7 +62,8 @@ class main {
 //                    FileManager manager = new FileManager();
 //                    manager.outputText(new File("/mnt/cifs_union/films"), options.getGBPARTSIZE());
 //                    BackblazeManager.downloadFile("AllFiles.txt","AllFiles.txt",options.getB2TOKENID(),options.getB2TOKEN());
-                ThreadManager.cloudDedupe(new String[]{"/Users/gijs/Desktop/Logo 4"});
+                List<String> toUpload = ThreadManager.cloudDedupe(new String[]{"/Users/gijs/Desktop/Logo 4", "/Users/gijs/Desktop/jenkins-jobs-aem"});
+                Stream.of(toUpload).collect(Collectors.toList()).forEach(System.out::println);
                 });
             exit.addActionListener(e -> confirmexit());
 
