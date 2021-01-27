@@ -20,7 +20,7 @@ public final class Options {
     private String NEWSPASSWORD;
     private Boolean SSL_NEWS;
     private int GBPARTSIZE;
-    private String[] directories;
+    private String directories;
 
     public Options() {
         try {
@@ -28,7 +28,7 @@ public final class Options {
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName() + " setting default Options...");
                 FileWriter myWriter = new FileWriter("options.conf");
-                myWriter.write("B2TOKEN=\nB2TOKENID=\nB2BUCKETID=\nNEWSUSER=\nNEWSPASSWORD=\nSSL_NEWS=true\nGBPARTSIZE=50");
+                myWriter.write("B2TOKEN=\nB2TOKENID=\nB2BUCKETID=\nNEWSUSER=\nNEWSPASSWORD=\nSSL_NEWS=true\nGBPARTSIZE=50\nDIRECTORIES=.");
                 myWriter.close();
                 setOptions();
             } else {
@@ -72,6 +72,9 @@ public final class Options {
                 if (data.startsWith("B2BUCKETID=")) {
                     this.B2BUCKETID = data.substring(11);
                 }
+                if (data.startsWith("DIRECTORIES=")) {
+                    this.directories = data.substring(12);
+                }
             }
             myReader.close();
         } catch (FileNotFoundException e) {
@@ -87,7 +90,7 @@ public final class Options {
     public void setB2TOKEN(String b2TOKEN) {
         try {
             FileWriter myWriter = new FileWriter("options.conf", false);
-            myWriter.write("B2TOKEN=" + b2TOKEN + "\nB2TOKENID=" + this.B2TOKENID + "\nB2BUCKETID=" + this.B2BUCKETID + "\nNEWSUSER=" + this.NEWSUSER + "\nNEWSPASSWORD=" + this.NEWSPASSWORD + "\nSSL_NEWS=" + this.SSL_NEWS + "\nGBPARTSIZE=" + this.GBPARTSIZE);
+            myWriter.write("B2TOKEN=" + b2TOKEN + "\nB2TOKENID=" + this.B2TOKENID + "\nB2BUCKETID=" + this.B2BUCKETID + "\nNEWSUSER=" + this.NEWSUSER + "\nNEWSPASSWORD=" + this.NEWSPASSWORD + "\nSSL_NEWS=" + this.SSL_NEWS + "\nGBPARTSIZE=" + this.GBPARTSIZE + "\nDIRECTORIES=" + directories);
             myWriter.close();
             setOptions();
         } catch (IOException e) {
@@ -103,7 +106,7 @@ public final class Options {
         public void setNEWSUSER (String NEWSUSER){
             try {
                 FileWriter myWriter = new FileWriter("options.conf", false);
-                myWriter.write("B2TOKEN=" + this.B2TOKEN + "\nB2TOKENID=" + this.B2TOKENID + "\nB2BUCKETID=" + this.B2BUCKETID + "\nNEWSUSER=" + NEWSUSER + "\nNEWSPASSWORD=" + this.NEWSPASSWORD + "\nSSL_NEWS=" + this.SSL_NEWS + "\nGBPARTSIZE=" + this.GBPARTSIZE);
+                myWriter.write("B2TOKEN=" + this.B2TOKEN + "\nB2TOKENID=" + this.B2TOKENID + "\nB2BUCKETID=" + this.B2BUCKETID + "\nNEWSUSER=" + NEWSUSER + "\nNEWSPASSWORD=" + this.NEWSPASSWORD + "\nSSL_NEWS=" + this.SSL_NEWS + "\nGBPARTSIZE=" + this.GBPARTSIZE + "\nDIRECTORIES=" + directories);
                 myWriter.close();
                 setOptions();
             } catch (IOException e) {
@@ -119,7 +122,7 @@ public final class Options {
         public void setNEWSPASSWORD (String NEWSPASSWORD){
             try {
                 FileWriter myWriter = new FileWriter("options.conf", false);
-                myWriter.write("B2TOKEN=" + this.B2TOKEN + "\nB2TOKENID=" + this.B2TOKENID + "\nB2BUCKETID=" + this.B2BUCKETID + "\nNEWSUSER=" + this.NEWSUSER + "\nNEWSPASSWORD=" + NEWSPASSWORD + "\nSSL_NEWS=" + this.SSL_NEWS + "\nGBPARTSIZE=" + this.GBPARTSIZE);
+                myWriter.write("B2TOKEN=" + this.B2TOKEN + "\nB2TOKENID=" + this.B2TOKENID + "\nB2BUCKETID=" + this.B2BUCKETID + "\nNEWSUSER=" + this.NEWSUSER + "\nNEWSPASSWORD=" + NEWSPASSWORD + "\nSSL_NEWS=" + this.SSL_NEWS + "\nGBPARTSIZE=" + this.GBPARTSIZE + "\nDIRECTORIES=" + directories);
                 myWriter.close();
                 setOptions();
             } catch (IOException e) {
@@ -135,7 +138,7 @@ public final class Options {
         public void setSSL_NEWS (Boolean SSL_NEWS){
             try {
                 FileWriter myWriter = new FileWriter("options.conf", false);
-                myWriter.write("B2TOKEN=" + this.B2TOKEN + "\nB2TOKENID=" + this.B2TOKENID + "\nB2BUCKETID=" + this.B2BUCKETID + "\nNEWSUSER=" + this.NEWSUSER + "\nNEWSPASSWORD=" + this.NEWSPASSWORD + "\nSSL_NEWS=" + SSL_NEWS + "\nGBPARTSIZE=" + this.GBPARTSIZE);
+                myWriter.write("B2TOKEN=" + this.B2TOKEN + "\nB2TOKENID=" + this.B2TOKENID + "\nB2BUCKETID=" + this.B2BUCKETID + "\nNEWSUSER=" + this.NEWSUSER + "\nNEWSPASSWORD=" + this.NEWSPASSWORD + "\nSSL_NEWS=" + SSL_NEWS + "\nGBPARTSIZE=" + this.GBPARTSIZE + "\nDIRECTORIES=" + directories);
                 myWriter.close();
                 setOptions();
             } catch (IOException e) {
@@ -151,7 +154,7 @@ public final class Options {
     public void setGBPARTSIZE(int GBPARTSIZE) {
         try {
             FileWriter myWriter = new FileWriter("options.conf", false);
-            myWriter.write("B2TOKEN=" + this.B2TOKEN + "\nB2TOKENID=" + this.B2TOKENID + "\nB2BUCKETID=" + this.B2BUCKETID + "\nNEWSUSER=" + this.NEWSUSER + "\nNEWSPASSWORD=" + NEWSPASSWORD + "\nSSL_NEWS=" + this.SSL_NEWS + "\nGBPARTSIZE=" + GBPARTSIZE);
+            myWriter.write("B2TOKEN=" + this.B2TOKEN + "\nB2TOKENID=" + this.B2TOKENID + "\nB2BUCKETID=" + this.B2BUCKETID + "\nNEWSUSER=" + this.NEWSUSER + "\nNEWSPASSWORD=" + NEWSPASSWORD + "\nSSL_NEWS=" + this.SSL_NEWS + "\nGBPARTSIZE=" + GBPARTSIZE + "\nDIRECTORIES=" + directories);
             myWriter.close();
             setOptions();
         } catch (IOException e) {
@@ -167,7 +170,7 @@ public final class Options {
     public void setB2TOKENID(String B2TOKENID) {
         try {
             FileWriter myWriter = new FileWriter("options.conf", false);
-            myWriter.write("B2TOKEN=" + this.B2TOKEN + "\nB2TOKENID=" + B2TOKENID + "\nB2BUCKETID=" + this.B2BUCKETID + "\nNEWSUSER=" + this.NEWSUSER + "\nNEWSPASSWORD=" + NEWSPASSWORD + "\nSSL_NEWS=" + this.SSL_NEWS + "\nGBPARTSIZE=" + GBPARTSIZE);
+            myWriter.write("B2TOKEN=" + this.B2TOKEN + "\nB2TOKENID=" + B2TOKENID + "\nB2BUCKETID=" + this.B2BUCKETID + "\nNEWSUSER=" + this.NEWSUSER + "\nNEWSPASSWORD=" + NEWSPASSWORD + "\nSSL_NEWS=" + this.SSL_NEWS + "\nGBPARTSIZE=" + GBPARTSIZE + "\nDIRECTORIES=" + directories);
             myWriter.close();
             setOptions();
         } catch (IOException e) {
@@ -183,7 +186,23 @@ public final class Options {
     public void setB2BUCKETID(String B2BUCKETID) {
         try {
             FileWriter myWriter = new FileWriter("options.conf", false);
-            myWriter.write("B2TOKEN=" + this.B2TOKEN + "\nB2TOKENID=" + B2TOKENID + "\nB2BUCKETID=" + B2BUCKETID + "\nNEWSUSER=" + this.NEWSUSER + "\nNEWSPASSWORD=" + NEWSPASSWORD + "\nSSL_NEWS=" + this.SSL_NEWS + "\nGBPARTSIZE=" + GBPARTSIZE);
+            myWriter.write("B2TOKEN=" + this.B2TOKEN + "\nB2TOKENID=" + B2TOKENID + "\nB2BUCKETID=" + B2BUCKETID + "\nNEWSUSER=" + this.NEWSUSER + "\nNEWSPASSWORD=" + NEWSPASSWORD + "\nSSL_NEWS=" + this.SSL_NEWS + "\nGBPARTSIZE=" + GBPARTSIZE + "\nDIRECTORIES=" + directories);
+            myWriter.close();
+            setOptions();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    public String getDirectories() {
+        return directories;
+    }
+
+    public void setDirectories(String Directories) {
+        try {
+            FileWriter myWriter = new FileWriter("options.conf", false);
+            myWriter.write("B2TOKEN=" + this.B2TOKEN + "\nB2TOKENID=" + this.B2TOKENID + "\nB2BUCKETID=" + this.B2BUCKETID + "\nNEWSUSER=" + this.NEWSUSER + "\nNEWSPASSWORD=" + NEWSPASSWORD + "\nSSL_NEWS=" + this.SSL_NEWS + "\nGBPARTSIZE=" + this.GBPARTSIZE + "\nDIRECTORIES=" + Directories);
             myWriter.close();
             setOptions();
         } catch (IOException e) {

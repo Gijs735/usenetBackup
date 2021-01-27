@@ -2,6 +2,7 @@
 // even if you are working with just swings.
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -16,7 +17,7 @@ class main {
     static Options options;
 
     public static void main(String args[]) {
-        if (System.getProperty("os.name").startsWith("Mac")) {
+        if (System.getProperty("os.name").startsWith("Linux")) {
             //Creating the Frame
             frame = new JFrame("Usenet backup");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -58,13 +59,7 @@ class main {
 
             optionsbutton.addActionListener(e -> OptionsDialog.createOptionsDialog(options));
             //start.addActionListener(e -> ThreadManager.startThreadManager(start,optionsbutton)); //execute the main method from CommandManager when pressing send button
-            start.addActionListener(e -> {
-//                    FileManager manager = new FileManager();
-//                    manager.outputText(new File("/mnt/cifs_union/films"), options.getGBPARTSIZE());
-//                    BackblazeManager.downloadFile("AllFiles.txt","AllFiles.txt",options.getB2TOKENID(),options.getB2TOKEN());
-                List<String> toUpload = ThreadManager.cloudDedupe(new String[]{"/Users/gijs/Desktop/Logo 4", "/Users/gijs/Desktop/jenkins-jobs-aem"});
-                Stream.of(toUpload).collect(Collectors.toList()).forEach(System.out::println);
-                });
+            start.addActionListener(main::actionPerformed);
             exit.addActionListener(e -> confirmexit());
 
             progress();
@@ -96,6 +91,37 @@ class main {
             }
         }
         catch (Exception e) {
+        }
+    }
+
+    private static void actionPerformed(ActionEvent e) {
+        List<String> toUpload = UploadManager.cloudDedupe(new String[]{options.getDirectories()});
+
+        for (int i = UploadManager.checkHowManyPackagesInCloud(); i < 100; i++){ //upload a max of 100 packages (5TB) per start click (100 packages = 100 * 50 = 5TB)
+            toUpload = UploadManager.preparePackage(toUpload, i);
+            if(UploadManager.checkIfPackageIsBiggerThen(options.getGBPARTSIZE() - 1, toUpload)){
+                try {
+                    CommandManager rar = new CommandManager("rar a -m5 -v256000k -hp896912666 package" + i + ".rar \"" + toUpload.stream().collect(Collectors.joining("\" \"")) + "\"");
+                    rar.start();
+                    rar.join();
+                    CommandManager par = new CommandManager("par2 create -s640000 -r10 package" + i + ".rar.par2 package" + i + ".part*.rar");
+                    par.start();
+                    par.join();
+                    CommandManager sfv = new CommandManager("cksfv -b $(pwd)package" + i + ".part*.rar > $(pwd)package" + i + ".sfv");
+                    sfv.start();
+                    sfv.join();
+                    CommandManager nyuu = new CommandManager("nyuu -h news.newshosting.com --ssl -u " + options.getNEWSUSER() + " -p " + options.getNEWSPASSWORD() + " --article-size 640000 --from cumspray@bigdick.cock --groups alt.binaries.backup -k1 --out $(pwd)package" + i + ".nzb *.sfv *.par2 package" + i + ".part*.rar");
+                    nyuu.start();
+                    nyuu.join();
+                    CommandManager clean = new CommandManager("rm -rf *.sfv *.par2 package" + i + ".part*.rar *.txt"); //bad for multithread switch later pls
+                    clean.start();
+                    clean.join();
+                    UploadManager.uploadChangedCloudFiles(toUpload, i);
+                } catch (InterruptedException interruptedException) {
+                    interruptedException.printStackTrace();
+                }
+            }
+            toUpload = UploadManager.cloudDedupe(new String[]{options.getDirectories()});
         }
     }
 }

@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 
 public class OptionsDialog {
@@ -10,6 +11,7 @@ public class OptionsDialog {
             @Override
             public void run()
             {
+
                 JFrame frame = new JFrame("Settings");
                 frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 frame.setSize(600, 400);
@@ -25,7 +27,7 @@ public class OptionsDialog {
                 header.add(headerlabel);
 
                 JPanel panel = new JPanel();
-                panel.setLayout(new GridLayout(7,1));
+                panel.setLayout(new GridLayout(8,1));
 
                 JLabel B2tokenlabel = new JLabel(" Backblaze B2 Application Key: ");
                 JPanel b2textpanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -57,6 +59,15 @@ public class OptionsDialog {
                 newsgroupPasswordText.setText(options.getNEWSPASSWORD());
                 newsgrouppasspanel.add(newsgroupPasswordText);
 
+                JLabel directorychooser = new JLabel(" Directory to include in backup: ");
+                JPanel directorychooserpanel = new JPanel();
+                JTextField chooser = new JTextField("", 10);
+                chooser.setText(options.getDirectories());
+                JButton selectFolderButton = new JButton("...");
+                selectFolderButton.addActionListener(e -> fileChooser(chooser));
+                directorychooserpanel.add(chooser);
+                directorychooserpanel.add(selectFolderButton);
+
                 JLabel gblabel = new JLabel(" GB's per upload: ");
                 JPanel gbpanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
                 JTextField gbText = new JTextField("", 3);
@@ -77,6 +88,8 @@ public class OptionsDialog {
                 panel.add(newsuserpanel);
                 panel.add(newsgroupPasswordLabel);
                 panel.add(newsgrouppasspanel);
+                panel.add(directorychooser);
+                panel.add(directorychooserpanel);
                 panel.add(gblabel);
                 panel.add(gbpanel);
                 panel.add(SSLoptionlabel);
@@ -105,8 +118,22 @@ public class OptionsDialog {
                     options.setNEWSUSER(newsgroupUserText.getText());
                     options.setGBPARTSIZE(Integer.parseInt(gbText.getText()));
                     options.setSSL_NEWS(SSLoption.isSelected());
+                    options.setDirectories(chooser.getText());
                 });
             }
         });
+    }
+
+    private static void fileChooser(JTextField chooser){
+        JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+        jfc.setDialogTitle("Choose the directory to backup: ");
+        jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        jfc.setMultiSelectionEnabled(false);
+        int returnValue = jfc.showOpenDialog(null);
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            if (jfc.getSelectedFile().isDirectory()) {
+                chooser.setText(jfc.getSelectedFile().getPath());
+            }
+        }
     }
 }

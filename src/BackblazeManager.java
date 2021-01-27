@@ -104,11 +104,14 @@ public class BackblazeManager {
             downloadUrl = authResult[2];
             bucketname = authResult[3];
         }
+        System.out.println("Got Authorization");
         byte[] file = b2downloadFile(fileName, authorizationToken, downloadUrl, bucketname);
+        System.out.println("File download complete to byte");
         File filepath = new File(downloadedFileName);
         try {
             OutputStream os = new FileOutputStream(filepath);
             os.write(file);
+            System.out.println("Written file");
             os.close();
         } catch (Exception e) {
             e.printStackTrace();

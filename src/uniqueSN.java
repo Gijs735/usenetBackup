@@ -10,19 +10,19 @@ public class uniqueSN {
     private static String sn = null;
 
     public static final String getSerialNumber() {
-        return "mac";
+//        return "mac";
 
-//        if (sn == null) {
-//            readDmidecode();
-//        }
-//        if (sn == null) {
-//            readLshal();
-//        }
-//        if (sn == null) {
-//            throw new RuntimeException("Cannot find computer SN");
-//        }
-//
-//        return sn;
+        if (sn == null) {
+            readDmidecode();
+        }
+        if (sn == null) {
+            readLshal();
+        }
+        if (sn == null) {
+            throw new RuntimeException("Cannot find computer SN");
+        }
+
+        return sn;
     }
 
     private static BufferedReader read(String command) {
@@ -57,7 +57,7 @@ public class uniqueSN {
         BufferedReader br = null;
 
         try {
-            br = read("dmidecode -t system");
+            br = read("sudo dmidecode -t system");
             while ((line = br.readLine()) != null) {
                 if (line.indexOf(marker) != -1) {
                     sn = line.split(marker)[1].trim();
